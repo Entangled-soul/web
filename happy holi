@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Holi</title>
+  <!-- Google Font for a festive feel -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+  <!-- Include Three.js and GSAP Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+  <style>
+    /* Reset and Base Styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      background: #000; /* Black background */
+      position: relative;
+      color: #fff;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1; /* Behind UI */
+      pointer-events: none;
+    }
+    /* Color Cycle Animation */
+    @keyframes colorCycle {
+      0%   { color: #ff3366; }
+      33%  { color: #33cc99; }
+      66%  { color: #ffdd00; }
+      100% { color: #9933ff; }
+    }
+    /* UI Container: Header */
+    .ui-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      font-family: 'Pacifico', cursive;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+    }
+    .ui-container h1 {
+      font-size: 2.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1rem;
+    }
+    /* Split header letters */
+    #mainHeader span {
+      display: inline-block;
+      animation: colorCycle 3s infinite alternate;
+    }
+    /* Stagger animation delays (skipping space if present) */
+    #mainHeader span:nth-child(1) { animation-delay: 0s; }
+    #mainHeader span:nth-child(2) { animation-delay: 0.2s; }
+    #mainHeader span:nth-child(3) { animation-delay: 0.4s; }
+    #mainHeader span:nth-child(4) { animation-delay: 0.6s; }
+    #mainHeader span:nth-child(5) { animation-delay: 0.8s; }
+    /* Assuming the 6th child is a space */
+    #mainHeader span:nth-child(7) { animation-delay: 1s; }
+    #mainHeader span:nth-child(8) { animation-delay: 1.2s; }
+    #mainHeader span:nth-child(9) { animation-delay: 1.4s; }
+    #mainHeader span:nth-child(10) { animation-delay: 1.6s; }
+    #mainHeader span:nth-child(11) { animation-delay: 1.8s; }
+    /* Color Picker */
+    .color-picker {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 10;
+    }
+    .color-orb {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .color-orb:hover {
+      transform: scale(1.2);
+    }
+    /* Hero Section with Form */
+    .hero {
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      padding: 2rem 1rem;
+      margin-top: 120px;
+    }
+    .hero h2 {
+      font-family: 'Pacifico', cursive;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      animation: colorCycle 3s infinite alternate;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      animation: colorCycle 3s infinite alternate;
+    }
+    .form-container {
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(8px);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .form-group {
+      margin-bottom: 1.2rem;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      animation: colorCycle 3s infinite alternate;
+    }
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.5rem;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+    input:focus {
+      outline: none;
+      background: rgba(255,255,255,0.3);
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      background: #ffdd00;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: colorCycle 3s infinite alternate;
+    }
+    .btn:hover {
+      background: #ff7f00;
+    }
+    /* Greeting Section */
+    .greeting-section {
+      display: none;
+      text-align: center;
+      padding: 2rem 1rem;
+      z-index: 10;
+      white-space: pre-line; /* Preserve newlines */
+    }
+    .greeting-section .personal-greeting {
+      font-size: 2.5rem;
+      animation: colorCycle 3s infinite alternate;
+    }
+    /* Footer with Name and Instagram ID */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.2);
+      padding: 0.8rem 1rem;
+      text-align: center;
+      z-index: 10;
+      font-size: 1rem;
+      animation: colorCycle 3s infinite alternate;
+    }
+    footer a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- UI Elements: Header -->
+  <div class="ui-container">
+    <h1 id="mainHeader">
+      <span>H</span><span>a</span><span>p</span><span>p</span><span>y</span>
+      <span>&nbsp;</span>
+      <span>H</span><span>o</span><span>l</span><span>i</span>
+    </h1>
+  </div>
+
+  <!-- Color Picker -->
+  <div class="color-picker">
+    <div class="color-orb" style="background: #ff3366;" data-color="0xff3366"></div>
+    <div class="color-orb" style="background: #33cc99;" data-color="0x33cc99"></div>
+    <div class="color-orb" style="background: #ffdd00;" data-color="0xffdd00"></div>
+    <div class="color-orb" style="background: #9933ff;" data-color="0x9933ff"></div>
+  </div>
+
+  <!-- Hero Section with Form -->
+  <section class="hero" id="hero">
+    <h2>Celebrate the Festival of Colors</h2>
+    <p>Join us in a vibrant celebration where every click bursts into quantum colors of joy!</p>
+    <div class="form-container" id="formContainer">
+      <form id="nameForm">
+        <div class="form-group">
+          <label for="userName">Enter Your Name:</label>
+          <input type="text" id="userName" name="userName" placeholder="Your name here..." required />
+        </div>
+        <button type="submit" class="btn" id="celebrateBtn">Let's Celebrate!</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Greeting Section with Share Button -->
+  <section class="greeting-section" id="greetingSection">
+    <h2 class="personal-greeting" id="personalGreeting"></h2>
+    <button class="btn" id="shareBtn">Share the Joy</button>
+  </section>
+
+  <!-- Footer with Name and Instagram ID -->
+  <footer>
+    <span>Prince</span> | <a href="https://www.instagram.com/__entangled_soul__/" target="_blank">@__entangled_soul__</a>
+  </footer>
+
+  <script>
+    // === Three.js Background Animation Setup ===
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    camera.position.z = 5;
+
+    const particles = new THREE.Group();
+    scene.add(particles);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const pointLight = new THREE.PointLight(0xffffff, 1);
+    pointLight.position.set(5, 5, 5);
+    scene.add(pointLight);
+
+    // Color settings
+    let selectedColor = 0xff3366;
+    const colors = [0xff3366, 0x33cc99, 0xffdd00, 0x9933ff];
+
+    // Function to create a particle at screen coordinates
+    function createParticle(x, y, color) {
+      const geometry = new THREE.SphereGeometry(0.1, 8, 8);
+      const material = new THREE.MeshPhongMaterial({ color: color, shininess: 100 });
+      const particle = new THREE.Mesh(geometry, material);
+      
+      // Convert screen coordinates to world coordinates
+      const vec = new THREE.Vector3(
+        (x / window.innerWidth) * 2 - 1,
+        -(y / window.innerHeight) * 2 + 1,
+        0.5
+      );
+      vec.unproject(camera);
+      particle.position.copy(vec);
+
+      // Set a random velocity
+      particle.velocity = new THREE.Vector3(
+        (Math.random() - 0.5) * 0.1,
+        (Math.random() - 0.5) * 0.1,
+        (Math.random() - 0.5) * 0.1
+      );
+
+      particles.add(particle);
+      return particle;
+    }
+
+    // Initial Particle Burst at Center
+    for (let i = 0; i < 500; i++) {
+      createParticle(window.innerWidth / 2, window.innerHeight / 2, colors[Math.floor(Math.random() * colors.length)]);
+    }
+
+    // Animation Loop
+    function animate() {
+      requestAnimationFrame(animate);
+      particles.children.forEach(particle => {
+        particle.position.add(particle.velocity);
+        // Bounce off boundaries
+        if (Math.abs(particle.position.x) > 5) particle.velocity.x *= -1;
+        if (Math.abs(particle.position.y) > 5) particle.velocity.y *= -1;
+        if (Math.abs(particle.position.z) > 5) particle.velocity.z *= -1;
+      });
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // === Interaction Handlers ===
+    // Add burst of particles on document click (avoid UI elements)
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.ui-container') && !e.target.closest('.color-picker') && !e.target.closest('form')) {
+        for (let i = 0; i < 50; i++) {
+          createParticle(e.clientX, e.clientY, selectedColor);
+        }
+        gsap.fromTo('#mainHeader', { scale: 1.2 }, { scale: 1, duration: 0.5, ease: "bounce.out" });
+      }
+    });
+
+    // Color picker handling – stop propagation to prevent document click firing
+    document.querySelectorAll('.color-orb').forEach(orb => {
+      orb.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectedColor = parseInt(e.target.dataset.color);
+      });
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // === Form and Greeting Section Handling ===
+    document.getElementById("nameForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const userName = document.getElementById("userName").value.trim();
+      if (userName !== "") {
+        // Two line breaks: after name, then "Don't spare..."
+        const greetingMessage = "Happy Holi, " + userName + "!\n\nDon't spare anyone with colours";
+        document.getElementById("personalGreeting").innerText = greetingMessage;
+        document.getElementById("greetingSection").style.display = "block";
+        document.getElementById("formContainer").style.display = "none";
+      }
+    });
+
+    // Share Button Functionality – share greeting and link together in one text message
+    document.getElementById("shareBtn").addEventListener("click", function() {
+      const greetingText = document.getElementById("personalGreeting").innerText;
+      const fullMessage = greetingText + "\n" + window.location.href;
+      const shareData = {
+        title: "Happy Holi",
+        text: fullMessage
+      };
+      if (navigator.share) {
+        navigator.share(shareData).catch(err => console.log("Error sharing", err));
+      } else {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(fullMessage)
+            .then(() => alert("Message and link copied to clipboard!"))
+            .catch(() => prompt("Copy this message along with the link:", fullMessage));
+        } else {
+          prompt("Copy this message along with the link:", fullMessage);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
